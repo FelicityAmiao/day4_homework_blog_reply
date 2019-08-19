@@ -54,6 +54,44 @@ Ext.onReady(() => {
 
     Ext.QuickTips.init();
     let isFocus = false;
+
+    function getCustomTable() {
+        let customTable = new Ext.Window({
+            title: 'Custom Your Table',
+            items: [{
+                id: 'tableForm',
+                xtype: 'form',
+                style: 'padding: 10px',
+                items: [{
+                    xtype: 'numberfield',
+                    fieldLabel: 'row',
+                    emptyText: 'input number',
+                    allowBlank: false
+                }, {
+                    xtype: 'numberfield',
+                    fieldLabel: 'col',
+                    emptyText: 'input number',
+                    allowBlank: false
+                }, {
+                    xtype: 'button',
+                    text: 'ok',
+                    listeners: {
+                        click: function () {
+                            if (Ext.getCmp('tableForm').form.isValid()) {
+                                let number = getRowAndColInput();
+                                customTable.close();
+                                if (number[0] === 'input number') return;
+                                let panel = createTablePanelByNumber(number);
+                                Ext.getCmp('replyHtmlEditor').insertAtCursor(panel.tpl.html);
+                            }
+                        }
+                    }
+                }]
+            }]
+        });
+        return customTable;
+    }
+
     let insertMenu = new Ext.menu.Menu({
         items: [{
             text: 'Table',
@@ -62,39 +100,7 @@ Ext.onReady(() => {
                     if (!isFocus) {
                         Ext.MessageBox.alert("Hint", "Please select the target first!");
                     } else {
-                        let customTable = new Ext.Window({
-                            title: 'Custom Your Table',
-                            items: [{
-                                id: 'tableForm',
-                                xtype: 'form',
-                                style: 'padding: 10px',
-                                items: [{
-                                    xtype: 'numberfield',
-                                    fieldLabel: 'row',
-                                    emptyText: 'input number',
-                                    allowBlank: false
-                                }, {
-                                    xtype: 'numberfield',
-                                    fieldLabel: 'col',
-                                    emptyText: 'input number',
-                                    allowBlank: false
-                                }, {
-                                    xtype: 'button',
-                                    text: 'ok',
-                                    listeners: {
-                                        click: function () {
-                                            if(Ext.getCmp('tableForm').form.isValid()) {
-                                                let number = getRowAndColInput();
-                                                customTable.close();
-                                                if (number[0] === 'input number') return;
-                                                let panel = createTablePanelByNumber(number);
-                                                Ext.getCmp('replyHtmlEditor').insertAtCursor(panel.tpl.html);
-                                            }
-                                        }
-                                    }
-                                }]
-                            }]
-                        });
+                        let customTable = getCustomTable();
                         customTable.show();
                     }
                 }
